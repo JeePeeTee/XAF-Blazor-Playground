@@ -1,22 +1,54 @@
-﻿using System;
+﻿#region Copyright (c) 2000-2021
+
+// ===========================================================
+// 
+//     XAF Blazor Playground project with code samples.
+//     Copyright (C) 2021 - Jean Paul Teunisse / jpt@sultancrm.nl
+// 
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+// 
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.Copyright (C) <year>  <name of author>
+// 
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+// 
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+// ===========================================================
+
+#endregion
+
+#region usings
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using DevExpress.ExpressApp.Model;
 using DevExpress.Persistent.Base;
 using DevExpress.Persistent.BaseImpl;
 using DevExpress.Xpo;
 
-namespace Playground.Module.BusinessObjects
-{
+#endregion
+
+namespace Playground.Module.BusinessObjects {
     [DefaultClassOptions]
     [ImageName("BO_Contact")]
     [DefaultProperty(nameof(EditorTesting.DefaultProperty))]
     [CreatableItem(false)]
     public class EditorTesting : BaseObject, ICheckedListBoxItemsProvider {
-        public EditorTesting(Session session) : base(session) { }
-
         private string _tagsFixedList;
+        public EditorTesting(Session session) : base(session) { }
 
         [ModelDefault("PropertyEditorType", "DevExpress.ExpressApp.Blazor.Editors.CheckedLookupStringPropertyEditor")]
         [Size(SizeAttribute.Unlimited)]
@@ -29,19 +61,24 @@ namespace Playground.Module.BusinessObjects
         [VisibleInDetailView(false)]
         public string DefaultProperty => "Default Property";
 
-        public override void AfterConstruction() {
-            base.AfterConstruction();
-        }
-
         public Dictionary<object, string> GetCheckedListBoxItems(string targetMemberName) {
-            return new Dictionary<object, string> {
-                {1, "Number #1"},
-                {2, "Number #2"},
-                {3, "Number #3"}
-            };
+            switch (targetMemberName) {
+                case nameof(this.TagsFixedList): {
+                    return new Dictionary<object, string> {
+                        {1, "Number #1"},
+                        {2, "Number #2"},
+                        {3, "Number #3"}
+                    };
+                }
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         public event EventHandler ItemsChanged;
-    }
 
+        public override void AfterConstruction() {
+            base.AfterConstruction();
+        }
+    }
 }
