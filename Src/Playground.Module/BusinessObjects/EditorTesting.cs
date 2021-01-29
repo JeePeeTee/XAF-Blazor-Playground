@@ -34,6 +34,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using DevExpress.ExpressApp.Model;
 using DevExpress.Persistent.Base;
 using DevExpress.Persistent.BaseImpl;
@@ -47,8 +48,16 @@ namespace Playground.Module.BusinessObjects {
     [DefaultProperty(nameof(EditorTesting.DefaultProperty))]
     [CreatableItem(false)]
     public class EditorTesting : BaseObject, ICheckedListBoxItemsProvider {
+        private Color _color;
         private string _tagsFixedList;
+        
         public EditorTesting(Session session) : base(session) { }
+
+        [EditorAlias("ColorPicker")]
+        public Color Color {
+            get => _color;
+            set => SetPropertyValue(nameof(Color), ref _color, value);
+        }
 
         [ModelDefault("PropertyEditorType", "DevExpress.ExpressApp.Blazor.Editors.CheckedLookupStringPropertyEditor")]
         [Size(SizeAttribute.Unlimited)]

@@ -1,0 +1,11 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+<input type="color" value=@ComponentModel.Value
+       @onchange=@(e => ComponentModel.SetValueFromUI(Convert.ToString(e.Value).ToUpper()))
+       disabled=@ComponentModel.ReadOnly
+       @attributes=@ComponentModel.Attributes />
+<label for="head">@ComponentModel.Value</label>
+@code {
+    [Parameter]
+    public ColorPickerModel ComponentModel { get; set; }
+    public static RenderFragment Create(ColorPickerModel componentModel) =>@<ColorPicker ComponentModel=@componentModel />;
+}
