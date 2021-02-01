@@ -35,7 +35,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using DevExpress.ExpressApp.Model;
+using DevExpress.ExpressApp.Xpo;
 using DevExpress.Persistent.Base;
 using DevExpress.Persistent.BaseImpl;
 using DevExpress.Xpo;
@@ -51,7 +53,8 @@ namespace Playground.Module.BusinessObjects {
     public class EditorTesting : BaseObject, ICheckedListBoxItemsProvider {
         private Color _color;
         private string _tagsFixedList;
-        
+        private string _tagsPersistentList;
+
         public EditorTesting(Session session) : base(session) { }
 
         [EditorAlias("ColorPicker")]
@@ -68,6 +71,15 @@ namespace Playground.Module.BusinessObjects {
             set => SetPropertyValue(nameof(TagsFixedList), ref _tagsFixedList, value);
         }
 
+        [ModelDefault("PropertyEditorType", "DevExpress.ExpressApp.Blazor.Editors.CheckedLookupStringPropertyEditor")]
+        [Size(SizeAttribute.Unlimited)]
+        public string TagsPersistentList
+        {
+            get => _tagsPersistentList;
+            set => SetPropertyValue(nameof(TagsPersistentList), ref _tagsPersistentList, value);
+        }
+
+
         [VisibleInListView(false)]
         [VisibleInDetailView(false)]
         public string DefaultProperty => "Default Property";
@@ -80,6 +92,10 @@ namespace Playground.Module.BusinessObjects {
                         {2, "Number #2"},
                         {3, "Number #3"}
                     };
+                }
+                case nameof(this.TagsPersistentList): {
+                    var ios = XPObjectSpace.FindObjectSpaceByObject(this);
+                    return ios.GetObjects<TagValues>().ToDictionary(s => (object)s.Oid, s => s.Description);
                 }
                 default:
                     throw new NotImplementedException();

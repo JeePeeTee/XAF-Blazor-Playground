@@ -29,6 +29,7 @@
 #region usings
 
 using System;
+using System.Linq;
 using DevExpress.Data.Filtering;
 using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.Security;
@@ -36,6 +37,7 @@ using DevExpress.ExpressApp.Updating;
 using DevExpress.Persistent.Base;
 using DevExpress.Persistent.BaseImpl;
 using DevExpress.Persistent.BaseImpl.PermissionPolicy;
+using Playground.Module.BusinessObjects;
 
 #endregion
 
@@ -53,6 +55,25 @@ namespace Playground.Module.DatabaseUpdate {
             //    theObject = ObjectSpace.CreateObject<DomainObject1>();
             //    theObject.Name = name;
             //}
+
+            TagValues();
+            SecurityModuleItems();
+            
+            ObjectSpace.CommitChanges(); //This line persists created object(s).
+        }
+
+        private void TagValues() {
+            if (ObjectSpace.GetObjects<TagValues>().Any()) return;
+            
+            for (var i = 0; i < 10; i++) {
+                var tagValues = ObjectSpace.CreateObject<TagValues>();
+                tagValues.Description = $"Tag value {i + 1}";
+            }
+
+            ObjectSpace.CommitChanges();
+        }
+
+        private void SecurityModuleItems() {
             var sampleUser = ObjectSpace.FindObject<PermissionPolicyUser>(new BinaryOperator("UserName", "User"));
             if (sampleUser == null) {
                 sampleUser = ObjectSpace.CreateObject<PermissionPolicyUser>();
@@ -80,7 +101,6 @@ namespace Playground.Module.DatabaseUpdate {
 
             adminRole.IsAdministrative = true;
             userAdmin.Roles.Add(adminRole);
-            ObjectSpace.CommitChanges(); //This line persists created object(s).
         }
 
         public override void UpdateDatabaseBeforeUpdateSchema() {
