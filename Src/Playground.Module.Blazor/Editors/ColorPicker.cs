@@ -40,69 +40,76 @@ using DevExpress.ExpressApp.Blazor.Editors.Adapters;
 using DevExpress.ExpressApp.Editors;
 using DevExpress.ExpressApp.Model;
 using DevExpress.ExpressApp.Utils;
-using DevExpress.Xpo.Metadata;
 using Microsoft.AspNetCore.Components;
 
 #endregion
 
 namespace Playground.Module.Blazor.Editors {
-    [PropertyEditor(typeof(Color), alias: "ColorPicker",true)]
-    public class ColorPickerPropertyEditor : BlazorPropertyEditorBase
-    {
+    [PropertyEditor(typeof(Color), alias: "ColorPicker", false)]
+    public class ColorPickerPropertyEditor : BlazorPropertyEditorBase {
         public ColorPickerPropertyEditor(Type objectType, IModelMemberViewItem model) : base(objectType, model) { }
         protected override IComponentAdapter CreateComponentAdapter() => new ColorPickerAdapter(new ColorPickerModel());
     }
-    public class ColorPickerModel : ComponentModelBase
-    {
-        public string Value
-        {
+
+    public class ColorPickerModel : ComponentModelBase {
+        public string Value {
             get => GetPropertyValue<string>();
             set => SetPropertyValue(value);
         }
-        public bool ReadOnly
-        {
+
+        public bool ReadOnly {
             get => GetPropertyValue<bool>();
             set => SetPropertyValue(value);
         }
-        public void SetValueFromUI(string value)
-        {
+
+        public void SetValueFromUI(string value) {
             SetPropertyValue(value, notify: false, nameof(Value));
             ValueChanged?.Invoke(this, EventArgs.Empty);
         }
+
         public event EventHandler ValueChanged;
     }
-    public class ColorPickerAdapter : ComponentAdapterBase
-    {
-        public ColorPickerAdapter(ColorPickerModel componentModel)
-        {
+
+    public class ColorPickerAdapter : ComponentAdapterBase {
+        public ColorPickerAdapter(ColorPickerModel componentModel) {
             ComponentModel = componentModel ?? throw new ArgumentNullException(nameof(componentModel));
             ComponentModel.ValueChanged += (s, e) => RaiseValueChanged();
         }
+
         public ColorPickerModel ComponentModel { get; }
-        public override void SetAllowEdit(bool allowEdit)
-        {
+
+        public override void SetAllowEdit(bool allowEdit) {
             ComponentModel.ReadOnly = !allowEdit;
         }
-        public override object GetValue()
-        {
+
+        public override object GetValue() {
             return ColorTranslator.FromHtml(ComponentModel.Value);
         }
-        public override void SetValue(object value)
-        {
-            ComponentModel.Value = ColorTranslator.ToHtml((Color)value);
+
+        public override void SetValue(object value) {
+            ComponentModel.Value = ColorTranslator.ToHtml((Color) value);
         }
-        protected override RenderFragment CreateComponent()
-        {
+
+        protected override RenderFragment CreateComponent() {
             return ComponentModelObserver.Create(ComponentModel, ColorPicker.Create(ComponentModel));
         }
-        public override void SetAllowNull(bool allowNull) { /* ...*/ }
-        public override void SetDisplayFormat(string displayFormat) { /* ...*/ }
-        public override void SetEditMask(string editMask) { /* ...*/ }
-        public override void SetEditMaskType(EditMaskType editMaskType) { /* ...*/ }
-        public override void SetErrorIcon(ImageInfo errorIcon) { /* ...*/ }
-        public override void SetErrorMessage(string errorMessage) { /* ...*/ }
-        public override void SetIsPassword(bool isPassword) { /* ...*/ }
-        public override void SetMaxLength(int maxLength) { /* ...*/ }
-        public override void SetNullText(string nullText) { /* ...*/ }
+
+        public override void SetAllowNull(bool allowNull) { }
+
+        public override void SetDisplayFormat(string displayFormat) { }
+
+        public override void SetEditMask(string editMask) { }
+
+        public override void SetEditMaskType(EditMaskType editMaskType) { }
+
+        public override void SetErrorIcon(ImageInfo errorIcon) { }
+
+        public override void SetErrorMessage(string errorMessage) { }
+
+        public override void SetIsPassword(bool isPassword) { }
+
+        public override void SetMaxLength(int maxLength) { }
+
+        public override void SetNullText(string nullText) { }
     }
 }
