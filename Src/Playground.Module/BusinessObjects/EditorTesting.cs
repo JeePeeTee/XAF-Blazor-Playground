@@ -39,6 +39,7 @@ using DevExpress.ExpressApp.Model;
 using DevExpress.Persistent.Base;
 using DevExpress.Persistent.BaseImpl;
 using DevExpress.Xpo;
+using Playground.Module.ValueConverter;
 
 #endregion
 
@@ -54,6 +55,7 @@ namespace Playground.Module.BusinessObjects {
         public EditorTesting(Session session) : base(session) { }
 
         [EditorAlias("ColorPicker")]
+        [ValueConverter(typeof(ColorValueConverter))]
         public Color Color {
             get => _color;
             set => SetPropertyValue(nameof(Color), ref _color, value);
