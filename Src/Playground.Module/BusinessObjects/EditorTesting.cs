@@ -73,12 +73,17 @@ namespace Playground.Module.BusinessObjects {
 
         [ModelDefault("PropertyEditorType", "DevExpress.ExpressApp.Blazor.Editors.CheckedLookupStringPropertyEditor")]
         [Size(SizeAttribute.Unlimited)]
-        public string TagsPersistentList
-        {
+        public string TagsPersistentList {
             get => _tagsPersistentList;
             set => SetPropertyValue(nameof(TagsPersistentList), ref _tagsPersistentList, value);
         }
 
+        private TimeSpan _time;
+        public TimeSpan Time {
+            get => _time;
+            set => SetPropertyValue(nameof(Time), ref _time, value);
+        }
+        
 
         [VisibleInListView(false)]
         [VisibleInDetailView(false)]
@@ -95,7 +100,7 @@ namespace Playground.Module.BusinessObjects {
                 }
                 case nameof(this.TagsPersistentList): {
                     var ios = XPObjectSpace.FindObjectSpaceByObject(this);
-                    return ios.GetObjects<TagValues>().ToDictionary(s => (object)s.Oid, s => s.Description);
+                    return ios.GetObjects<TagValues>().ToDictionary(s => (object) s.Oid, s => s.Description);
                 }
                 default:
                     throw new NotImplementedException();

@@ -1,0 +1,19 @@
+﻿@using DevExpress.Blazor
+<DxTimeEdit @bind-Time="@ComponentModel.Value"
+             Format="HH:mm"
+             DisplayFormat="HH:mm"
+             Enabled=@ComponentModel.ReadOnly
+             Attributes=@ComponentModel.Attributes.ToDictionary(s=>s.Key, s=>s.Value)>
+</DxTimeEdit>
+
+@* <input type="time" value=@ComponentModel.Value *@
+@*        $1$ @onchange=(e => ComponentModel.SetValueFromUI(Convert.ToString(e.Value).ToUpper())) #1# *@
+@*        disabled=@ComponentModel.ReadOnly *@
+@*        @attributes=@ComponentModel.Attributes /> *@
+@* <label for="head">@ComponentModel.Value</label> *@
+
+@code {
+    [Parameter]
+    public TimeSpanModel ComponentModel { get; set; }
+    public static RenderFragment Create(TimeSpanModel componentModel) =>@<TimeSpan ComponentModel=@componentModel />;
+}
