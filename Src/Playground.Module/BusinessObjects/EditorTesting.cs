@@ -79,6 +79,8 @@ namespace Playground.Module.BusinessObjects {
         }
 
         private TimeSpan _time;
+        [EditorAlias("TimeSpan")]
+        //[ValueConverter(typeof(ColorValueConverter))]
         public TimeSpan Time {
             get => _time;
             set => SetPropertyValue(nameof(Time), ref _time, value);

@@ -97,4 +97,6 @@ namespace Playground.Module.BusinessObjects {
             base.AfterConstruction();
         }
     }
+
+    
 }
