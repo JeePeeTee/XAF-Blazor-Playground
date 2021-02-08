@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace Playground.Module.Blazor.Editors
 {
-    [PropertyEditor(typeof(TimeSpan), alias: "TimeSpan", false)]
+    [PropertyEditor(typeof(TimeSpan), alias: "TimeEditor", false)]
     public class TimeSpanPropertyEditor : BlazorPropertyEditorBase
     {
         public TimeSpanPropertyEditor(Type objectType, IModelMemberViewItem model) : base(objectType, model) { }
@@ -20,9 +20,9 @@ namespace Playground.Module.Blazor.Editors
 
     public class TimeSpanModel : ComponentModelBase
     {
-        public string Value
+        public TimeSpan? Value
         {
-            get => GetPropertyValue<string>();
+            get => GetPropertyValue<TimeSpan?>();
             set => SetPropertyValue(value);
         }
 
@@ -32,7 +32,7 @@ namespace Playground.Module.Blazor.Editors
             set => SetPropertyValue(value);
         }
 
-        public void SetValueFromUI(string value)
+        public void SetValueFromUI(TimeSpan? value)
         {
             SetPropertyValue(value, notify: false, nameof(Value));
             ValueChanged?.Invoke(this, EventArgs.Empty);
@@ -58,17 +58,17 @@ namespace Playground.Module.Blazor.Editors
 
         public override object GetValue()
         {
-            return ColorTranslator.FromHtml(ComponentModel.Value);
+            return ComponentModel.Value;
         }
 
         public override void SetValue(object value)
         {
-            ComponentModel.Value = (string)value;
+            ComponentModel.Value = (TimeSpan)value;
         }
 
         protected override RenderFragment CreateComponent()
         {
-            return ComponentModelObserver.Create(ComponentModel, TimeSpan.Create(ComponentModel));
+            return ComponentModelObserver.Create(ComponentModel, TimeEditor.Create(ComponentModel));
         }
 
         public override void SetAllowNull(bool allowNull) { }

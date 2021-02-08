@@ -79,13 +79,33 @@ namespace Playground.Module.BusinessObjects {
         }
 
         private TimeSpan _time;
-        [EditorAlias("TimeSpan")]
+        [EditorAlias("TimeEditor")]
         //[ValueConverter(typeof(ColorValueConverter))]
         public TimeSpan Time {
             get => _time;
             set => SetPropertyValue(nameof(Time), ref _time, value);
         }
-        
+
+        private string _propA;
+
+        public string PropA {
+            get => _propA;
+            set => SetPropertyValue(nameof(PropA), ref _propA, value);
+        }
+
+        private string _propB;
+
+        public string PropB {
+            get => _propB;
+            set => SetPropertyValue(nameof(PropB), ref _propB, value);
+        }
+
+        private string _propC;
+
+        public string PropC {
+            get => _propC;
+            set => SetPropertyValue(nameof(PropC), ref _propC, value);
+        }
 
         [VisibleInListView(false)]
         [VisibleInDetailView(false)]
