@@ -21,8 +21,7 @@ namespace Playground.Module.Blazor.Editors
 
     public class DXTimeSpanModel : ComponentModelBase
     {
-        public TimeSpan Value
-        {
+        public TimeSpan Value {
             get => GetPropertyValue<TimeSpan>();
             set => SetPropertyValue(value);
         }

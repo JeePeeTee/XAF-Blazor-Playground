@@ -1,9 +1,10 @@
 ﻿@using DevExpress.Blazor
 @using Microsoft.AspNetCore.Components.Web
 
-<DxTimeEdit @bind-Time="@ComponentModel.Value"
-             Format="HH:mm"
-             DisplayFormat="HH:mm"></DxTimeEdit>
+<DxTimeEdit Time="@ComponentModel.Value"
+            Format="HH:mm"
+            TimeChanged="@((TimeSpan newValue) => ComponentModel.SetValueFromUI(newValue))"
+            DisplayFormat="HH:mm"></DxTimeEdit>
 
 @code {
     [Parameter]
