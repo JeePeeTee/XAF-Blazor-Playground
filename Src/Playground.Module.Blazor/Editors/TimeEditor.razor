@@ -1,13 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
-@using DevExpress.Blazor.TimeEdit
 <input type="time" value=@ComponentModel.Value 
         @onchange=@(e => ComponentModel.SetValueFromUI(TimeSpan.Parse((string)e.Value))) 
         disabled=@ComponentModel.ReadOnly     
         @attributes=@ComponentModel.Attributes /> 
  <label for="head">@ComponentModel.Value</label> 
-
-
-
 
 @code {
     [Parameter]

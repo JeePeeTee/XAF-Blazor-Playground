@@ -1,0 +1,12 @@
+﻿@using DevExpress.Blazor
+@using Microsoft.AspNetCore.Components.Web
+
+<DxTimeEdit @bind-Time="@ComponentModel.Value"
+             Format="HH:mm"
+             DisplayFormat="HH:mm"></DxTimeEdit>
+
+@code {
+    [Parameter]
+    public DXTimeSpanModel ComponentModel { get; set; }
+    public static RenderFragment Create(DXTimeSpanModel componentModel) =>@<DXTimeEditor ComponentModel=@componentModel />;
+}
