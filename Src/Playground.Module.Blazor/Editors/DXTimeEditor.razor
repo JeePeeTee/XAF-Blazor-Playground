@@ -4,7 +4,8 @@
 <DxTimeEdit Time="@ComponentModel.Value"
             Format="HH:mm"
             TimeChanged="@((TimeSpan newValue) => ComponentModel.SetValueFromUI(newValue))"
-            DisplayFormat="HH:mm"></DxTimeEdit>
+            DisplayFormat="HH:mm"
+            ReadOnly=@ComponentModel.ReadOnly>></DxTimeEdit>
 
 @code {
     [Parameter]

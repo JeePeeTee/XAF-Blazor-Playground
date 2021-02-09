@@ -80,6 +80,7 @@ namespace Playground.Module.BusinessObjects {
 
         private TimeSpan _time;
         [EditorAlias("TimeEditor")]
+        [ModelDefault("AllowEdit", "False")]
         public TimeSpan Time {
             get => _time;
             set => SetPropertyValue(nameof(Time), ref _time, value);
@@ -87,6 +88,7 @@ namespace Playground.Module.BusinessObjects {
 
         private TimeSpan _otherTime;
         [EditorAlias("dxTimeEditor")]
+        [ModelDefault("AllowEdit", "False")]
         public TimeSpan OtherTime
         {
             get => _otherTime;
