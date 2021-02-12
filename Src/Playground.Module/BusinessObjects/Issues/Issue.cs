@@ -22,8 +22,8 @@ public class Issue : BaseObject {
         set => SetPropertyValue(nameof(Title), ref _title, value);
     }
 
-    [ImmediatePostData]
-    public TimeSpan TotalTime => GetTime();
+    
+    //public TimeSpan TotalTime => GetTime();
 
 
 
