@@ -13,27 +13,31 @@ using DevExpress.ExpressApp.Templates;
 using DevExpress.ExpressApp.Utils;
 using DevExpress.Persistent.Base;
 using DevExpress.Persistent.Validation;
+using DevExpress.Xpo;
 
 namespace Playground.Module.Controllers
 {
     // For more typical usage scenarios, be sure to check out https://documentation.devexpress.com/eXpressAppFramework/clsDevExpressExpressAppViewControllertopic.aspx.
     public partial class TimerController : ViewController
     {
+        private IObjectSpace ios;
+
+        private Issue record;
         public TimerController()
         {
             InitializeComponent();
 
             Starttimer = new DevExpress.ExpressApp.Actions.SimpleAction();
 
-            Starttimer.Caption = "Vervallen";
+            Starttimer.Caption = "Start Timer";
             Starttimer.ConfirmationMessage = null;
-            Starttimer.Id = "Vervallen";
+            Starttimer.Id = "StartTimer";
             Starttimer.ImageName = "State_Task_WaitingForSomeoneElse";
-            Starttimer.SelectionDependencyType = DevExpress.ExpressApp.Actions.SelectionDependencyType.RequireSingleObject;
-            Starttimer.TargetObjectsCriteria = "";
-            Starttimer.TargetObjectsCriteriaMode = DevExpress.ExpressApp.Actions.TargetObjectsCriteriaMode.TrueForAll;
+            //Starttimer.SelectionDependencyType = DevExpress.ExpressApp.Actions.SelectionDependencyType.RequireSingleObject;
+            //Starttimer.TargetObjectsCriteria = "";
+            //Starttimer.TargetObjectsCriteriaMode = DevExpress.ExpressApp.Actions.TargetObjectsCriteriaMode.TrueForAll;
             Starttimer.ToolTip = null;
-            Starttimer.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(Vervallen_Execute);
+            Starttimer.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(StartTimer_Execute);
             Starttimer.TargetObjectType = typeof(Issue);
 
             Starttimer.TargetViewType = ViewType.DetailView;
@@ -47,9 +51,37 @@ namespace Playground.Module.Controllers
         }
         private DevExpress.ExpressApp.Actions.SimpleAction Starttimer;
 
-        private void Vervallen_Execute(object sender, SimpleActionExecuteEventArgs e)
+        private void StartTimer_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            throw new NotImplementedException();
+            ios = Application.CreateObjectSpace();
+
+            //record = ios.CreateObject<Issue>();
+            //record.Title = "TEST";
+            Issue currentObject = (Issue)View.CurrentObject;
+            
+            var Timers = ios.CreateObject<Timer>();
+            
+            Timers.StartTime = DateTime.Now.TimeOfDay;
+            Timers.StartTimer = Timer.Progress.Running;
+            Timers.Issue = ObjectSpace.GetObject(currentObject);
+            //Timers.Issue = currentObject;
+
+            //Timers.Issue = e.SelectedObjects.;
+            //foreach (var Item in e.SelectedObjects) {
+            //   Timers.Issue = (Issue)Item;
+            //}
+
+                
+
+
+            //record = ios.CreateObject<Timer>();
+            //record.StartTime = DateTime.Now.TimeOfDay;
+
+
+            ios.CommitChanges();
+            ObjectSpace.Refresh();
+            View.Refresh(true);
+
         }
 
         protected override void OnActivated()
