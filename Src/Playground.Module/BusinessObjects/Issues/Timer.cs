@@ -77,8 +77,14 @@ public class Timer : BaseObject {
     [VisibleInDetailView(false)]
 
     public string DefaultProperty => "TestField";
+
+
+    [Action(ToolTip = "Tooltip here...", ImageName = "State_Task_WaitingForSomeoneElse", TargetObjectsCriteria = "true")]
+    public void Test() {
         
-        
+    }
+
+
     //StartTimer == TimeSpan.Zero ? "00:00" : TimeSpent.ToString();
     public override void AfterConstruction() {
         base.AfterConstruction();

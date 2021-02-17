@@ -20,7 +20,6 @@ namespace Playground.Module.Controllers
     // For more typical usage scenarios, be sure to check out https://documentation.devexpress.com/eXpressAppFramework/clsDevExpressExpressAppViewControllertopic.aspx.
     public partial class TimerController : ViewController
     {
-        private IObjectSpace ios;
 
         private Issue record;
         public TimerController()
@@ -33,49 +32,35 @@ namespace Playground.Module.Controllers
             Starttimer.ConfirmationMessage = null;
             Starttimer.Id = "StartTimer";
             Starttimer.ImageName = "State_Task_WaitingForSomeoneElse";
-            //Starttimer.SelectionDependencyType = DevExpress.ExpressApp.Actions.SelectionDependencyType.RequireSingleObject;
+            Starttimer.SelectionDependencyType = DevExpress.ExpressApp.Actions.SelectionDependencyType.Independent;
             //Starttimer.TargetObjectsCriteria = "";
             //Starttimer.TargetObjectsCriteriaMode = DevExpress.ExpressApp.Actions.TargetObjectsCriteriaMode.TrueForAll;
             Starttimer.ToolTip = null;
             Starttimer.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(StartTimer_Execute);
-            Starttimer.TargetObjectType = typeof(Issue);
+            Starttimer.TargetObjectType = typeof(Timer);
 
-            Starttimer.TargetViewType = ViewType.DetailView;
-            Starttimer.TargetViewNesting = Nesting.Any;
+            Starttimer.TargetViewType = ViewType.ListView;
+            Starttimer.TargetViewNesting = Nesting.Nested;
 
             this.Actions.Add(Starttimer);
 
 
 
-            // Target required Views (via the TargetXXX properties) and create their Actions.
+            
         }
         private DevExpress.ExpressApp.Actions.SimpleAction Starttimer;
 
         private void StartTimer_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            ios = Application.CreateObjectSpace();
+            using var ios = Application.CreateObjectSpace();
 
-            //record = ios.CreateObject<Issue>();
-            //record.Title = "TEST";
-            Issue currentObject = (Issue)View.CurrentObject;
-            
+            var currentObject = e.CurrentObject as Issue;
+
             var Timers = ios.CreateObject<Timer>();
             
             Timers.StartTime = DateTime.Now.TimeOfDay;
-            Timers.StartTimer = Timer.Progress.Running;
-            Timers.Issue = ObjectSpace.GetObject(currentObject);
-            //Timers.Issue = currentObject;
-
-            //Timers.Issue = e.SelectedObjects.;
-            //foreach (var Item in e.SelectedObjects) {
-            //   Timers.Issue = (Issue)Item;
-            //}
-
-                
-
-
-            //record = ios.CreateObject<Timer>();
-            //record.StartTime = DateTime.Now.TimeOfDay;
+            Timers.StartTimer = Timer.Progress.Running; 
+            Timers.Issue = ios.GetObject(currentObject);
 
 
             ios.CommitChanges();
