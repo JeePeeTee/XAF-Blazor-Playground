@@ -1,86 +1,104 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DevExpress.Data.Filtering;
+﻿#region Copyright (c) 2000-2021
+
+// ===========================================================
+// 
+//     XAF Blazor Playground project with code samples.
+//     Copyright (C) 2021 - Jean Paul Teunisse / jpt@sultancrm.nl
+// 
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+// 
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.Copyright (C) <year>  <name of author>
+// 
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+// 
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+// ===========================================================
+
+#endregion
+
+#region usings
+
+using System;
 using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.Actions;
-using DevExpress.ExpressApp.Editors;
-using DevExpress.ExpressApp.Layout;
-using DevExpress.ExpressApp.Model.NodeGenerators;
-using DevExpress.ExpressApp.SystemModule;
-using DevExpress.ExpressApp.Templates;
-using DevExpress.ExpressApp.Utils;
 using DevExpress.Persistent.Base;
-using DevExpress.Persistent.Validation;
-using DevExpress.Xpo;
 
-namespace Playground.Module.Controllers
-{
+#endregion
+
+namespace Playground.Module.Controllers {
     // For more typical usage scenarios, be sure to check out https://documentation.devexpress.com/eXpressAppFramework/clsDevExpressExpressAppViewControllertopic.aspx.
-    public partial class TimerController : ViewController
-    {
+    public partial class TimerController : ViewController {
+        private SimpleAction Starttimer;
 
-        private Issue record;
-        public TimerController()
-        {
+        public TimerController() {
             InitializeComponent();
 
-            Starttimer = new DevExpress.ExpressApp.Actions.SimpleAction();
+            Starttimer = new SimpleAction() {
+                Caption = "Start Timer",
+                ConfirmationMessage = null,
+                Id = nameof(Starttimer),
+                Category = PredefinedCategory.Edit.ToString(),
+                ImageName = "State_Task_WaitingForSomeoneElse",
+                SelectionDependencyType = SelectionDependencyType.Independent,
+                ToolTip = null,
+                TargetObjectType = typeof(Timer),
+                TargetViewType = ViewType.ListView,
+                TargetViewNesting = Nesting.Nested,
+                TargetObjectsCriteriaMode = TargetObjectsCriteriaMode.TrueForAll,
+            };
 
-            Starttimer.Caption = "Start Timer";
-            Starttimer.ConfirmationMessage = null;
-            Starttimer.Id = "StartTimer";
-            Starttimer.ImageName = "State_Task_WaitingForSomeoneElse";
-            Starttimer.SelectionDependencyType = DevExpress.ExpressApp.Actions.SelectionDependencyType.Independent;
-            //Starttimer.TargetObjectsCriteria = "";
-            //Starttimer.TargetObjectsCriteriaMode = DevExpress.ExpressApp.Actions.TargetObjectsCriteriaMode.TrueForAll;
-            Starttimer.ToolTip = null;
-            Starttimer.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(StartTimer_Execute);
-            Starttimer.TargetObjectType = typeof(Timer);
-
-            Starttimer.TargetViewType = ViewType.ListView;
-            Starttimer.TargetViewNesting = Nesting.Nested;
+            Starttimer.Execute += new SimpleActionExecuteEventHandler(StartTimer_Execute);
 
             this.Actions.Add(Starttimer);
-
-
-
-            
+            //RegisterActions(components);
         }
-        private DevExpress.ExpressApp.Actions.SimpleAction Starttimer;
 
-        private void StartTimer_Execute(object sender, SimpleActionExecuteEventArgs e)
-        {
+        private void StartTimer_Execute(object sender, SimpleActionExecuteEventArgs e) {
             using var ios = Application.CreateObjectSpace();
 
-            var currentObject = e.CurrentObject as Issue;
-
-            var Timers = ios.CreateObject<Timer>();
+            Issue issue = null;
             
-            Timers.StartTime = DateTime.Now.TimeOfDay;
-            Timers.StartTimer = Timer.Progress.Running; 
-            Timers.Issue = ios.GetObject(currentObject);
+            if (((ListView)View).CollectionSource is PropertyCollectionSource) {
+                var collectionSource = (PropertyCollectionSource)((ListView)View).CollectionSource;
+                issue = collectionSource.MasterObject as Issue;
+            }
 
+            var timers = ios.CreateObject<Timer>();
+
+            timers.StartTime = DateTime.Now.TimeOfDay;
+            timers.StartTimer = Timer.Progress.Running;
+            timers.Issue = ios.GetObject(issue);
 
             ios.CommitChanges();
+
             ObjectSpace.Refresh();
             View.Refresh(true);
-
         }
 
-        protected override void OnActivated()
-        {
+        protected override void OnActivated() {
             base.OnActivated();
             // Perform various tasks depending on the target View.
         }
-        protected override void OnViewControlsCreated()
-        {
+
+        protected override void OnViewControlsCreated() {
             base.OnViewControlsCreated();
             // Access and customize the target View control.
         }
-        protected override void OnDeactivated()
-        {
+
+        protected override void OnDeactivated() {
             // Unsubscribe from previously subscribed events and release other references and resources.
             base.OnDeactivated();
         }
