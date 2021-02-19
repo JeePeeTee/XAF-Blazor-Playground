@@ -1,106 +1,152 @@
-﻿#region Copyright (c) 2000-2021
-
-// ===========================================================
-// 
-//     XAF Blazor Playground project with code samples.
-//     Copyright (C) 2021 - Jean Paul Teunisse / jpt@sultancrm.nl
-// 
-//     This program is free software: you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
-// 
-//     This program is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.Copyright (C) <year>  <name of author>
-// 
-//     This program is free software: you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
-// 
-//     This program is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
-// 
-// ===========================================================
-
-#endregion
-
-#region usings
-
-using System;
+﻿using System;
+using System.ComponentModel;
+using System.Linq;
 using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.Actions;
 using DevExpress.Persistent.Base;
+using DevExpress.Persistent.BaseImpl.PermissionPolicy;
 
-#endregion
+public class TimerController : ViewController {
+    private readonly IContainer components = null;
 
-namespace Playground.Module.Controllers {
-    // For more typical usage scenarios, be sure to check out https://documentation.devexpress.com/eXpressAppFramework/clsDevExpressExpressAppViewControllertopic.aspx.
-    public partial class TimerController : ViewController {
-        private SimpleAction Starttimer;
+    public TimerController() {
+        this.components = new Container();
+        InitializeStarttimerAction();
+        InitializeStoptimerAction();
+    }
 
-        public TimerController() {
-            InitializeComponent();
+    // New actions here... check templates actsmpl, act...
 
-            Starttimer = new SimpleAction() {
-                Caption = "Start Timer",
-                ConfirmationMessage = null,
-                Id = nameof(Starttimer),
-                Category = PredefinedCategory.Edit.ToString(),
-                ImageName = "State_Task_WaitingForSomeoneElse",
-                SelectionDependencyType = SelectionDependencyType.Independent,
-                ToolTip = null,
-                TargetObjectType = typeof(Timer),
-                TargetViewType = ViewType.ListView,
-                TargetViewNesting = Nesting.Nested,
-                TargetObjectsCriteriaMode = TargetObjectsCriteriaMode.TrueForAll,
-            };
+    #region Simple action: Starttimer
 
-            Starttimer.Execute += new SimpleActionExecuteEventHandler(StartTimer_Execute);
+    // Add this to Constructor
+    // InitializeStarttimerAction();
 
-            this.Actions.Add(Starttimer);
-            //RegisterActions(components);
+    private SimpleAction Starttimer = null;
+
+    private void InitializeStarttimerAction() {
+        Starttimer = new SimpleAction(this, nameof(Starttimer), PredefinedCategory.Edit) {
+            Caption = "Start Timer",
+            ConfirmationMessage = null,
+            ImageName = "State_Task_WaitingForSomeoneElse",
+            SelectionDependencyType = SelectionDependencyType.Independent,
+            ToolTip = null,
+            TargetObjectType = typeof(Timer),
+            TargetViewType = ViewType.ListView,
+            TargetViewNesting = Nesting.Nested,
+            TargetObjectsCriteriaMode = TargetObjectsCriteriaMode.TrueForAll,
+        };
+
+        Starttimer.Execute += new SimpleActionExecuteEventHandler(Starttimer_Execute);
+
+        this.Actions.Add(Starttimer);
+    }
+
+    
+
+    private void Starttimer_Execute(object sender, SimpleActionExecuteEventArgs e) {
+        using var ios = Application.CreateObjectSpace();
+
+
+        Issue issue = null;
+
+        if (((ListView)View).CollectionSource is PropertyCollectionSource)
+        {
+            var collectionSource = (PropertyCollectionSource)((ListView)View).CollectionSource;
+            issue = collectionSource.MasterObject as Issue;
         }
 
-        private void StartTimer_Execute(object sender, SimpleActionExecuteEventArgs e) {
-            using var ios = Application.CreateObjectSpace();
+        var timers = ios.CreateObject<Timer>();
 
-            Issue issue = null;
-            
-            if (((ListView)View).CollectionSource is PropertyCollectionSource) {
-                var collectionSource = (PropertyCollectionSource)((ListView)View).CollectionSource;
-                issue = collectionSource.MasterObject as Issue;
+        timers.StartTime = DateTime.Now.TimeOfDay;
+        timers.StartTimer = Timer.Progress.Running;
+        timers.Owner = (PermissionPolicyUser)ios.GetObject(SecuritySystem.CurrentUser);
+        timers.Issue = ios.GetObject(issue);
+
+        ios.CommitChanges();
+
+        ObjectSpace.Refresh();
+        View.Refresh(true);
+    }
+
+    #endregion Simple action: Starttimer
+
+    #region Simple action: Stoptimer
+
+    // Add this to Constructor
+    // InitializeStoptimerAction();
+
+    private SimpleAction Stoptimer = null;
+
+    private void InitializeStoptimerAction() {
+        Stoptimer = new SimpleAction(this, nameof(Stoptimer), PredefinedCategory.Edit) {
+            Caption = "Stop Timer",
+            ConfirmationMessage = null,
+            ImageName = "State_Task_WaitingForSomeoneElse",
+            SelectionDependencyType = SelectionDependencyType.Independent,
+            ToolTip = null,
+            TargetObjectType = typeof(Timer),
+            TargetViewType = ViewType.ListView,
+            TargetViewNesting = Nesting.Nested,
+            TargetObjectsCriteriaMode = TargetObjectsCriteriaMode.TrueForAll,
+        };
+
+        Stoptimer.Execute += new SimpleActionExecuteEventHandler(Stoptimer_Execute);
+
+        this.Actions.Add(Stoptimer);
+    }
+
+    private void Stoptimer_Execute(object sender, SimpleActionExecuteEventArgs e) {
+        using var ios = Application.CreateObjectSpace();
+
+        var owner = (PermissionPolicyUser)ios.GetObject(SecuritySystem.CurrentUser);
+        var runningstop = ios.GetObjects<Timer>().Where(w => w.Owner == owner && w.StartTimer == Timer.Progress.Running);
+        if (runningstop == null)
+        {
+            throw new UserFriendlyException("You dont have any active activities");
+        }
+        else
+        {
+            foreach (var Item in runningstop)
+            {
+                Item.StartTimer = Timer.Progress.Stopped;
             }
 
-            var timers = ios.CreateObject<Timer>();
-
-            timers.StartTime = DateTime.Now.TimeOfDay;
-            timers.StartTimer = Timer.Progress.Running;
-            timers.Issue = ios.GetObject(issue);
-
-            ios.CommitChanges();
-
-            ObjectSpace.Refresh();
-            View.Refresh(true);
         }
 
-        protected override void OnActivated() {
-            base.OnActivated();
-            // Perform various tasks depending on the target View.
+        ios.CommitChanges();
+        ObjectSpace.Refresh();
+        View.Refresh(true);
+    }
+
+    #endregion Simple action: Stoptimer
+
+
+
+    protected override void OnActivated() {
+        base.OnActivated();
+        // Perform various tasks depending on the target View.
+    }
+
+    protected override void OnViewControlsCreated() {
+        base.OnViewControlsCreated();
+        // Access and customize the target View control.
+    }
+
+    protected override void OnDeactivated() {
+        // Unsubscribe from previously subscribed events and release other references and resources.
+        base.OnDeactivated();
+    }
+
+    protected override void Dispose(bool disposing) {
+        if (disposing) {
+            foreach (var action in this.Actions) {
+                action.Dispose();
+            }
+
+            components?.Dispose();
         }
 
-        protected override void OnViewControlsCreated() {
-            base.OnViewControlsCreated();
-            // Access and customize the target View control.
-        }
-
-        protected override void OnDeactivated() {
-            // Unsubscribe from previously subscribed events and release other references and resources.
-            base.OnDeactivated();
-        }
+        base.Dispose(disposing);
     }
 }

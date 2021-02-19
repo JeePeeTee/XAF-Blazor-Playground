@@ -1,10 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using DevExpress.CodeParser;
 using DevExpress.ExpressApp.DC;
 using DevExpress.ExpressApp.Model;
 using DevExpress.Persistent.Base;
 using DevExpress.Persistent.BaseImpl;
+using DevExpress.Persistent.BaseImpl.PermissionPolicy;
 using DevExpress.Xpo;
 using DevExpress.XtraRichEdit.Commands;
 
@@ -15,6 +17,14 @@ using DevExpress.XtraRichEdit.Commands;
 [CreatableItem(false)]
 public class Timer : BaseObject {
     public Timer(Session session) : base(session) {
+    }
+
+    private PermissionPolicyUser _owner;
+
+    public PermissionPolicyUser Owner
+    {
+        get => _owner;
+        set => SetPropertyValue(nameof(Owner), ref _owner, value);
     }
 
     private Progress _startTimer;
@@ -52,7 +62,7 @@ public class Timer : BaseObject {
         set => SetPropertyValue(nameof(Work), ref _work, value);
     }
 
-    [Association("Issue-Timers")]
+    [DevExpress.Xpo.Association("Issue-Timers")]
 
     public Issue Issue
     {
@@ -65,24 +75,32 @@ public class Timer : BaseObject {
 
     private TimeSpan _timeSpent;
 
-    [VisibleInListView(false)]
-    [VisibleInDetailView(false)]
-
     public TimeSpan TimeSpent {
         get => _timeSpent;
         set => SetPropertyValue(nameof(TimeSpent), ref _timeSpent, value);
+
+
     }
 
-    [VisibleInListView(false)]
+    protected override void OnChanged(string propertyName, object oldValue, object newValue)
+    {
+        base.OnChanged(propertyName, oldValue, newValue);
+        switch (propertyName)
+        {
+            case nameof(StartTimer):
+                if ((Progress)newValue == Progress.Stopped)
+                {
+                    TimeSpent = DateTime.Now.TimeOfDay - StartTime;
+                }
+
+                break;
+        }
+    }
+
     [VisibleInDetailView(false)]
 
-    public string DefaultProperty => "TestField";
+    public string DefaultProperty => TimeSpent.ToString() == "" ? "00:00" : TimeSpent.ToString();
 
-
-    [Action(ToolTip = "Tooltip here...", ImageName = "State_Task_WaitingForSomeoneElse", TargetObjectsCriteria = "true")]
-    public void Test() {
-        
-    }
 
 
     //StartTimer == TimeSpan.Zero ? "00:00" : TimeSpent.ToString();
