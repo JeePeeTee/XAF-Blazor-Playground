@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using DevExpress.ExpressApp.Editors;
 
 namespace Playground.Module.Controllers
 {
@@ -28,8 +29,8 @@ namespace Playground.Module.Controllers
 
         private void InitializeAddTimeAction() {
             AddTime = new PopupWindowShowAction(this, nameof(AddTime), PredefinedCategory.Edit) {
-                AcceptButtonCaption = null,
-                CancelButtonCaption = null,
+                AcceptButtonCaption = "Accept",
+                CancelButtonCaption = "Cancel",
                 Caption = "Add time",
                 ConfirmationMessage = null,
                 Id = "Addtime",
@@ -51,11 +52,10 @@ namespace Playground.Module.Controllers
         }
 
         private void AddTime_CustomizePopupWindowParams(object sender, CustomizePopupWindowParamsEventArgs e)
-        { 
-            using var ios = Application.CreateObjectSpace();
-            var record = ios.CreateObject<Timer>();
-            var action = (PopupWindowShowAction) sender;
-            e.View = action.Application.CreateDetailView(ios, record);
+        {
+            var objectSpace = Application.CreateObjectSpace();
+            var record = objectSpace.CreateObject<Timer>();
+            e.View = Application.CreateDetailView(objectSpace, record);
         }
 
         private void AddTime_Execute(object sender, PopupWindowShowActionExecuteEventArgs e) {
