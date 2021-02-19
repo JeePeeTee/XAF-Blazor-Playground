@@ -47,6 +47,10 @@ public class TimerController : ViewController {
     private void Starttimer_Execute(object sender, SimpleActionExecuteEventArgs e) {
         using var ios = Application.CreateObjectSpace();
 
+        //stop alle timers
+
+        Stoptimer_Execute(sender,e);
+
 
         Issue issue = null;
 
